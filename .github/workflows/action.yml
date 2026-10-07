@@ -1,0 +1,40 @@
+# Runs the action from this checkout against the example contracts and checks
+# that it passes or fails the way it should.
+name: action
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  fixtures:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - new: vault_v2_compatible
+            expect: success
+          - new: vault_v2_risky
+            expect: success
+          - new: vault_v2_breaking
+            expect: failure
+    name: v1 -> ${{ matrix.new }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        id: specguard
+        continue-on-error: true
+        with:
+          old: fixtures/wasm/vault_v1.wasm
+          new: fixtures/wasm/${{ matrix.new }}.wasm
+      - name: Check outcome
+        env:
+          OUTCOME: ${{ steps.specguard.outcome }}
+          EXPECT: ${{ matrix.expect }}
+          VERDICT: ${{ steps.specguard.outputs.verdict }}
+        run: |
+          echo "outcome=$OUTCOME expected=$EXPECT verdict=$VERDICT"
+          test "$OUTCOME" = "$EXPECT"
+          test -n "$VERDICT"

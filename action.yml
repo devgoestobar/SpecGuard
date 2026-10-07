@@ -1,0 +1,78 @@
+name: SpecGuard
+description: Fail the build when a Soroban contract upgrade breaks its public interface.
+branding:
+  icon: shield
+  color: gray-dark
+
+inputs:
+  old:
+    description: Current version. A .wasm path, a contract id (C...) or a Wasm hash.
+    required: true
+  new:
+    description: Candidate version. A .wasm path, a contract id (C...) or a Wasm hash.
+    required: true
+  fail-on:
+    description: Lowest severity that fails the step, `breaking` or `risky`.
+    default: breaking
+  network:
+    description: testnet or futurenet, when old or new is a contract id or hash.
+    default: ""
+  rpc-url:
+    description: RPC endpoint, overrides network. Needed for mainnet.
+    default: ""
+
+outputs:
+  verdict:
+    description: breaking, risky or compatible.
+    value: ${{ steps.check.outputs.verdict }}
+  breaking:
+    description: Number of breaking changes.
+    value: ${{ steps.check.outputs.breaking }}
+  risky:
+    description: Number of risky changes.
+    value: ${{ steps.check.outputs.risky }}
+  report:
+    description: Path to the JSON report.
+    value: ${{ steps.check.outputs.report }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Install SpecGuard
+      shell: bash
+      run: npm ci --omit=dev --no-audit --no-fund --prefix "$GITHUB_ACTION_PATH"
+
+    - name: Compare interfaces
+      id: check
+      shell: bash
+      env:
+        OLD: ${{ inputs.old }}
+        NEW: ${{ inputs.new }}
+        FAIL_ON: ${{ inputs.fail-on }}
+        NETWORK: ${{ inputs.network }}
+        RPC_URL: ${{ inputs.rpc-url }}
+      run: |
+        cli="$GITHUB_ACTION_PATH/src/cli.ts"
+        report="$RUNNER_TEMP/specguard-report.json"
+        args=(diff "$OLD" "$NEW" --fail-on "$FAIL_ON" --out "$report")
+        [ -n "$NETWORK" ] && args+=(--network "$NETWORK")
+        [ -n "$RPC_URL" ] && args+=(--rpc-url "$RPC_URL")
+
+        set +e
+        node "$cli" "${args[@]}"
+        code=$?
+        set -e
+
+        if [ -f "$report" ]; then
+          node "$cli" render "$report" --format markdown >> "$GITHUB_STEP_SUMMARY"
+          node -e '
+            const r = require(process.argv[1]);
+            console.log(`verdict=${r.verdict}\nbreaking=${r.summary.breaking}\nrisky=${r.summary.risky}`);
+          ' "$report" >> "$GITHUB_OUTPUT"
+          echo "report=$report" >> "$GITHUB_OUTPUT"
+        fi
+        exit $code

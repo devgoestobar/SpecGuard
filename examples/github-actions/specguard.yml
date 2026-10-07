@@ -1,0 +1,30 @@
+# Example: block a pull request that would break the interface of a contract
+# already deployed on testnet.
+#
+# Copy to .github/workflows/specguard.yml in your contract repository and set
+# a repository variable CONTRACT_ID to the deployed contract.
+
+name: interface check
+
+on:
+  pull_request:
+
+jobs:
+  specguard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: stellar/stellar-cli@v27.1.0
+
+      - name: Build contract
+        run: |
+          rustup target add wasm32v1-none
+          stellar contract build
+
+      - uses: devgoestobar/SpecGuard@main
+        with:
+          old: ${{ vars.CONTRACT_ID }}
+          new: target/wasm32v1-none/release/my_contract.wasm
+          network: testnet
+          # fail-on: risky
