@@ -1,0 +1,40 @@
+{
+  "name": "specguard",
+  "version": "0.0.0",
+  "description": "Interface compatibility checker for Soroban contracts",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "specguard": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "specguard": "node src/cli.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devgoestobar/SpecGuard.git"
+  },
+  "keywords": [
+    "stellar",
+    "soroban",
+    "smart-contracts",
+    "compatibility",
+    "ci"
+  ],
+  "dependencies": {
+    "@stellar/stellar-sdk": "^17.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^7.0.2"
+  }
+}
