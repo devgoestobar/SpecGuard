@@ -2,6 +2,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const wasm = (name: string) => `fixtures/wasm/${name}.wasm`;
@@ -53,4 +56,22 @@ test("asks for a network when given a contract id", () => {
   const r = run("diff", "C" + "A".repeat(55), wasm("vault_v1"));
   assert.equal(r.code, 2);
   assert.match(r.stderr, /--network or --rpc-url/);
+});
+
+test("renders a saved report as markdown", () => {
+  const dir = mkdtempSync(join(tmpdir(), "specguard-"));
+  const file = join(dir, "report.json");
+  assert.equal(run("diff", wasm("vault_v1"), wasm("vault_v2_breaking"), "--out", file).code, 1);
+  const r = run("render", file, "--format", "markdown");
+  assert.equal(r.code, 0);
+  assert.match(r.stdout, /^### SpecGuard: breaking/);
+  assert.match(r.stdout, /\| breaking \| `fn last_action` \| function removed \|/);
+  assert.match(r.stdout, /`i128` → `u64`/);
+});
+
+test("render rejects files that are not reports", () => {
+  const dir = mkdtempSync(join(tmpdir(), "specguard-"));
+  const file = join(dir, "other.json");
+  writeFileSync(file, "{}");
+  assert.equal(run("render", file).code, 2);
 });

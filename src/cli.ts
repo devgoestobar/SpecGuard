@@ -1,18 +1,24 @@
 #!/usr/bin/env node
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { compare } from "./compare/diff.ts";
 import { interfaceFromWasm } from "./extract/spec.ts";
 import { loadWasm } from "./extract/source.ts";
+import { renderMarkdown } from "./report/markdown.ts";
 import { renderText } from "./report/text.ts";
+import type { Report } from "./model.ts";
 
 const USAGE = `Usage: specguard diff <old> <new> [options]
+       specguard render <report.json> [--format text|markdown]
 
 Compare the public interface of two Soroban contract versions.
 <old> and <new> can each be a .wasm file, a contract id (C...) or a Wasm hash.
 
+render prints a saved JSON report in another format.
+
 Options:
-  --format <text|json>     Output format (default: text)
+  --format <text|json|markdown>
+                           Output format (default: text)
   --out <file>             Also write the JSON report to a file
   --fail-on <breaking|risky>
                            Lowest severity that fails the run (default: breaking)
@@ -48,26 +54,37 @@ async function main(argv: string[]): Promise<number> {
   }
 
   const [command, oldArg, newArg, ...rest] = positionals;
+  const format = values.format;
+  if (format !== "text" && format !== "json" && format !== "markdown") return usageError(`unknown format: ${format}`);
+
+  if (command === "render") {
+    if (!oldArg || newArg) return usageError("render takes one report file");
+    const report = JSON.parse(await readFile(oldArg, "utf8")) as Report;
+    if (report.schema !== 1) throw new Error(`${oldArg}: not a SpecGuard report`);
+    process.stdout.write(output(report, format, values["no-color"]));
+    return 0;
+  }
+
   if (command !== "diff") return usageError(`unknown command: ${command}`);
   if (!oldArg || !newArg || rest.length) return usageError("diff takes exactly two arguments");
-  if (values.format !== "text" && values.format !== "json") return usageError(`unknown format: ${values.format}`);
   if (values["fail-on"] !== "breaking" && values["fail-on"] !== "risky") return usageError(`--fail-on must be breaking or risky`);
 
   const opts = { network: values.network, rpcUrl: values["rpc-url"] };
   const [a, b] = await Promise.all([loadWasm(oldArg, opts), loadWasm(newArg, opts)]);
   const report = compare(interfaceFromWasm(a.wasm, a.label), interfaceFromWasm(b.wasm, b.label));
-  const json = JSON.stringify(report, null, 2) + "\n";
 
-  if (values.out) await writeFile(values.out, json);
-  if (values.format === "json") {
-    process.stdout.write(json);
-  } else {
-    const color = !values["no-color"] && !process.env.NO_COLOR && process.stdout.isTTY === true;
-    process.stdout.write(renderText(report, color));
-  }
+  if (values.out) await writeFile(values.out, JSON.stringify(report, null, 2) + "\n");
+  process.stdout.write(output(report, format, values["no-color"]));
 
   const failing = values["fail-on"] === "risky" ? report.verdict !== "compatible" : report.verdict === "breaking";
   return failing ? 1 : 0;
+}
+
+function output(report: Report, format: "text" | "json" | "markdown", noColor?: boolean): string {
+  if (format === "json") return JSON.stringify(report, null, 2) + "\n";
+  if (format === "markdown") return renderMarkdown(report);
+  const color = !noColor && !process.env.NO_COLOR && process.stdout.isTTY === true;
+  return renderText(report, color);
 }
 
 function usageError(message: string): number {

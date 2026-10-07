@@ -25,6 +25,9 @@ specguard diff CBQ...XYZ target/wasm32v1-none/release/app.wasm --network testnet
 
 # machine-readable report
 specguard diff old.wasm new.wasm --format json > report.json
+
+# print a saved report as markdown
+specguard render report.json --format markdown
 ```
 
 Each side can be a `.wasm` file, a contract id or a Wasm hash. Contract ids and
@@ -58,6 +61,22 @@ result: breaking
 | 0 | Passed |
 | 1 | Breaking changes found (or risky ones, with `--fail-on risky`) |
 | 2 | Invalid input or runtime error |
+
+## GitHub Actions
+
+```yaml
+- uses: devgoestobar/SpecGuard@main
+  with:
+    old: ${{ vars.CONTRACT_ID }}        # deployed contract
+    new: target/wasm32v1-none/release/my_contract.wasm
+    network: testnet
+```
+
+The step fails when the new build breaks the interface (`fail-on: risky` to be
+stricter) and writes the report to the job summary. Outputs: `verdict`,
+`breaking`, `risky`, `report` (path to the JSON report). A complete workflow
+that builds the contract first is in
+[examples/github-actions/specguard.yml](examples/github-actions/specguard.yml).
 
 ## What it checks
 
