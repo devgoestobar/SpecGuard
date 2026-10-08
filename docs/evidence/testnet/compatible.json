@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "old": {
+    "source": "testnet:CAWFWCMUQVA2GXHLNDWZHKIPENH6ULOL2MR7G3PDDQOHBWSBRTYXTFS6",
+    "wasmHash": "6be7f445d4c003d31f93fcc82306a3fc9196bab8e45f918f2574941c40700528"
+  },
+  "new": {
+    "source": "vault_v2_compatible.wasm",
+    "wasmHash": "da68f2e06c15076c9b07ab53b57bcbf759d6dcd802895e1e36ed2ac20b6369da"
+  },
+  "verdict": "compatible",
+  "summary": {
+    "breaking": 0,
+    "risky": 0,
+    "compatible": 2,
+    "info": 1
+  },
+  "changes": [
+    {
+      "severity": "compatible",
+      "rule": "fn-added",
+      "path": "fn balance",
+      "message": "function added",
+      "after": "balance(owner: Address) -> i128"
+    },
+    {
+      "severity": "compatible",
+      "rule": "error-added",
+      "path": "error VaultError::Locked",
+      "message": "error code added",
+      "after": "4",
+      "usedBy": [
+        "deposit",
+        "withdraw"
+      ]
+    },
+    {
+      "severity": "info",
+      "rule": "fn-doc",
+      "path": "fn deposit",
+      "message": "doc comment changed"
+    }
+  ]
+}

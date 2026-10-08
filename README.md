@@ -131,6 +131,7 @@ of it (compatible, risky, breaking). The built Wasm is committed in
 | Tests | 51 tests, see [docs/evidence/test-log.txt](docs/evidence/test-log.txt) and the [ci workflow runs](https://github.com/devgoestobar/SpecGuard/actions/workflows/ci.yml) |
 | CI gate | [action.yml](action.yml), [example workflow](examples/github-actions/specguard.yml), and the [action self-test](https://github.com/devgoestobar/SpecGuard/actions/workflows/action.yml), which checks the step fails on the breaking upgrade |
 | Reports | [examples/reports](examples/reports) in text, JSON and markdown |
+| Deployed contract | v1 on testnet, compared against the upgrades: [docs/evidence/testnet](docs/evidence/testnet) |
 | Screenshots | [docs/evidence/screenshots](docs/evidence/screenshots) |
 
 ## License

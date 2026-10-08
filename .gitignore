@@ -9,3 +9,6 @@ coverage/
 
 # Soroban / Rust build output for fixture contracts
 fixtures/contracts/target/
+
+# Stellar CLI config and keys for this project (never commit secrets)
+.stellar/
