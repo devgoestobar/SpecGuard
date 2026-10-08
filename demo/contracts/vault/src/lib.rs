@@ -32,6 +32,7 @@ pub enum VaultError {
     NotFound = 1,
     Insufficient = 2,
     Paused = 3,
+    Locked = 4,
 }
 
 #[contracttype]
@@ -52,7 +53,9 @@ impl Vault {
         env.storage().instance().set(&Key::Status, &Status::Open);
     }
 
-    /// Deposit `amount` for `from`. Returns the new balance.
+    /// Deposit `amount` for `from`.
+    ///
+    /// Returns the new balance of the position.
     pub fn deposit(env: Env, from: Address, amount: i128) -> Result<i128, VaultError> {
         from.require_auth();
         if Self::status(env.clone()) == Status::Paused {
@@ -88,6 +91,11 @@ impl Vault {
 
     pub fn last_action(env: Env, owner: Address) -> Option<Action> {
         env.storage().persistent().get(&Key::LastAction(owner))
+    }
+
+    /// Total amount held for `owner`, zero when there is no position.
+    pub fn balance(env: Env, owner: Address) -> i128 {
+        Self::position(env, owner).map(|p| p.amount).unwrap_or(0)
     }
 
     pub fn status(env: Env) -> Status {
