@@ -38,7 +38,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v5
       with:
         node-version: 22
 
@@ -73,6 +73,18 @@ runs:
             const r = require(process.argv[1]);
             console.log(`verdict=${r.verdict}\nbreaking=${r.summary.breaking}\nrisky=${r.summary.risky}`);
           ' "$report" >> "$GITHUB_OUTPUT"
+          # One annotation per breaking or risky change, so the reason shows
+          # on the run page and the pull request without opening the logs.
+          node -e '
+            const r = require(process.argv[1]);
+            const clean = (s) => String(s).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+            for (const c of r.changes) {
+              if (c.severity !== "breaking" && c.severity !== "risky") continue;
+              const detail = c.before !== undefined && c.after !== undefined ? ` (${c.before} -> ${c.after})` : "";
+              const level = c.severity === "breaking" ? "error" : "warning";
+              console.log(`::${level} title=SpecGuard ${c.severity}::${clean(`${c.path}: ${c.message}${detail}`)}`);
+            }
+          ' "$report"
           echo "report=$report" >> "$GITHUB_OUTPUT"
         fi
         exit $code

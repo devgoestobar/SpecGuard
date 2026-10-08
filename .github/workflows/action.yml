@@ -22,7 +22,7 @@ jobs:
             expect: failure
     name: v1 -> ${{ matrix.new }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./
         id: specguard
         continue-on-error: true
