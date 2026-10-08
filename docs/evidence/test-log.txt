@@ -1,0 +1,83 @@
+SpecGuard test run
+commit:      64d790c
+date (UTC):  2026-10-08T11:52:11Z
+node:        v22.21.1
+npm:         10.9.4
+stellar-sdk: 17.2.1
+typescript:  7.0.2
+
+✔ exits 0 for a compatible upgrade (208.797ms)
+✔ exits 0 for risky changes by default (179.830583ms)
+✔ exits 1 for risky changes with --fail-on risky (183.108041ms)
+✔ exits 1 for a breaking upgrade (177.172041ms)
+✔ prints a JSON report (180.183917ms)
+✔ exits 2 on bad input (706.256708ms)
+✔ asks for a network when given a contract id (175.534917ms)
+✔ renders a saved report as markdown (357.7345ms)
+✔ render rejects files that are not reports (176.666667ms)
+▶ functions
+  ✔ removed function is breaking (0.979792ms)
+  ✔ added function is compatible (0.482917ms)
+  ✔ argument count change is breaking (0.100042ms)
+  ✔ argument type change is breaking (0.137584ms)
+  ✔ T to Option<T> argument is risky (0.122708ms)
+  ✔ Option<T> to T argument is breaking (0.055125ms)
+  ✔ renamed argument is risky (0.105916ms)
+  ✔ swapped arguments of the same type are breaking (0.127875ms)
+  ✔ return type change is breaking (0.249458ms)
+  ✔ doc change is info (0.215666ms)
+  ✔ constructor changes are info (0.050292ms)
+  ✔ identical interfaces have no changes (0.0435ms)
+✔ functions (3.215625ms)
+▶ structs
+  ✔ added, removed and retyped fields are breaking (0.161ms)
+  ✔ field order in a named struct does not matter (0.037833ms)
+  ✔ field order in a tuple struct matters (0.036625ms)
+  ✔ changes carry the functions that use the type (0.11625ms)
+✔ structs (0.393209ms)
+▶ types
+  ✔ removing a used type is breaking (0.046667ms)
+  ✔ removing an unused type is info (0.0255ms)
+  ✔ adding a type is compatible (0.023292ms)
+  ✔ changing kind is breaking (0.038291ms)
+  ✔ type doc change is info (0.027834ms)
+✔ types (0.199834ms)
+▶ unions
+  ✔ added case is risky, removed or changed case is breaking (0.423708ms)
+✔ unions (0.455042ms)
+▶ enums
+  ✔ added value is risky (0.1455ms)
+  ✔ removed value is breaking (0.045958ms)
+  ✔ renumbered value is breaking (0.080208ms)
+  ✔ renamed value is risky (0.1185ms)
+✔ enums (0.454ms)
+▶ errors
+  ✔ added code is compatible (0.123333ms)
+  ✔ removed code is risky (0.040083ms)
+  ✔ changed code is breaking (0.033416ms)
+  ✔ renamed code is info (0.030334ms)
+✔ errors (0.270542ms)
+▶ metadata
+  ✔ newer protocol is risky (0.04575ms)
+  ✔ build metadata change is info (0.032042ms)
+✔ metadata (0.105ms)
+▶ verdict
+  ✔ is the highest severity found (0.111917ms)
+✔ verdict (0.131375ms)
+✔ reads the v1 interface (0.546292ms)
+✔ v1 against itself has no changes (1.05575ms)
+✔ compatible upgrade (1.351875ms)
+✔ risky upgrade (1.007ms)
+✔ breaking upgrade (0.715583ms)
+✔ rejects Wasm without a contract spec (0.207459ms)
+✔ reads a named custom section (3.346583ms)
+✔ returns undefined when the section is missing (0.159ms)
+✔ rejects bytes that are not a Wasm module (0.107042ms)
+ℹ tests 51
+ℹ suites 8
+ℹ pass 51
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2408.1685
