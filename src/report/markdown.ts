@@ -30,7 +30,7 @@ function detail(c: Change): string {
   const parts: string[] = [];
   if (c.before !== undefined && c.after !== undefined) parts.push(`${code(c.before)} → ${code(c.after)}`);
   else if (c.before !== undefined) parts.push(`was ${code(c.before)}`);
-  else if (c.after !== undefined) parts.push(code(c.after));
+  else if (c.after !== undefined) parts.push(`+ ${code(c.after)}`);
   if (c.usedBy?.length) parts.push(`used by ${c.usedBy.map(code).join(", ")}`);
   return parts.join("<br>");
 }

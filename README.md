@@ -78,6 +78,16 @@ stricter) and writes the report to the job summary. Outputs: `verdict`,
 that builds the contract first is in
 [examples/github-actions/specguard.yml](examples/github-actions/specguard.yml).
 
+## Report viewer
+
+`viewer/` is a static page that renders a JSON report: open
+`viewer/index.html` from a clone, or serve the repository and open
+`viewer/?report=<url-of-report.json>`. Reports are read in the browser and never
+uploaded. Sample reports from the example contracts are in
+[examples/reports](examples/reports).
+
+![viewer](docs/evidence/screenshots/viewer-breaking.png)
+
 ## What it checks
 
 Functions, arguments, return types, custom types (structs, unions, enums),
@@ -111,6 +121,17 @@ node src/cli.ts diff fixtures/wasm/vault_v1.wasm fixtures/wasm/vault_v2_breaking
 of it (compatible, risky, breaking). The built Wasm is committed in
 `fixtures/wasm`, so tests do not need Rust. To rebuild it, install the
 `stellar` CLI and run `scripts/build-fixtures.sh`.
+
+## Evidence
+
+| | |
+|---|---|
+| Comparison engine | [src/compare/diff.ts](src/compare/diff.ts), [src/extract/spec.ts](src/extract/spec.ts), rules in [docs/RULES.md](docs/RULES.md) |
+| Example contracts | [fixtures/contracts](fixtures/contracts): a vault contract and three upgrades (compatible, risky, breaking) |
+| Tests | 51 tests, see [docs/evidence/test-log.txt](docs/evidence/test-log.txt) and the [ci workflow runs](https://github.com/devgoestobar/SpecGuard/actions/workflows/ci.yml) |
+| CI gate | [action.yml](action.yml), [example workflow](examples/github-actions/specguard.yml), and the [action self-test](https://github.com/devgoestobar/SpecGuard/actions/workflows/action.yml), which checks the step fails on the breaking upgrade |
+| Reports | [examples/reports](examples/reports) in text, JSON and markdown |
+| Screenshots | [docs/evidence/screenshots](docs/evidence/screenshots) |
 
 ## License
 

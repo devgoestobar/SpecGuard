@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SpecGuard report viewer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-row">
+      <a class="brand" href="./">specguard<span class="dim">/viewer</span></a>
+      <nav>
+        <span class="dim">samples:</span>
+        <a href="?report=../examples/reports/compatible.json">compatible</a>
+        <a href="?report=../examples/reports/risky.json">risky</a>
+        <a href="?report=../examples/reports/breaking.json">breaking</a>
+        <a class="sep" href="https://github.com/devgoestobar/SpecGuard">github</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="empty">
+      <h1>Open a report</h1>
+      <p>Drop a <code>report.json</code> anywhere on this page, or
+        <label class="link">choose a file<input id="file" type="file" accept=".json,application/json" hidden></label>.
+        Nothing is uploaded; the file is read in your browser.</p>
+      <p>Create one with:</p>
+      <pre>specguard diff old.wasm new.wasm --out report.json</pre>
+      <p class="dim">Or open one of the samples above, built from the example vault contract.</p>
+    </section>
+
+    <p id="error" class="error" hidden></p>
+
+    <section id="report" hidden>
+      <div class="head">
+        <div id="verdict" class="verdict"></div>
+        <div class="counts" id="counts"></div>
+      </div>
+
+      <table class="sources">
+        <tbody>
+          <tr><th>old</th><td id="old-source"></td><td class="hash" id="old-hash"></td></tr>
+          <tr><th>new</th><td id="new-source"></td><td class="hash" id="new-hash"></td></tr>
+        </tbody>
+      </table>
+
+      <div class="toolbar">
+        <div class="filters" id="filters"></div>
+        <label class="link">open another<input id="file2" type="file" accept=".json,application/json" hidden></label>
+      </div>
+
+      <table class="changes">
+        <thead>
+          <tr><th>severity</th><th>where</th><th>change</th><th>detail</th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <p id="none" class="dim" hidden>No interface changes.</p>
+
+      <p class="foot dim">Rules and reasoning: <a href="https://github.com/devgoestobar/SpecGuard/blob/main/docs/RULES.md">docs/RULES.md</a></p>
+    </section>
+  </main>
+
+  <div id="drop" class="drop" hidden>drop report.json</div>
+  <script src="viewer.js"></script>
+</body>
+</html>

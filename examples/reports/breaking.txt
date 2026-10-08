@@ -1,0 +1,18 @@
+old  vault_v1.wasm           6be7f445..0528
+new  vault_v2_breaking.wasm  7cc398bc..2adf
+
+BREAKING  fn deposit(amount)          argument type changed
+          i128 -> u64
+BREAKING  fn position                 return type changed
+          Option<Position> -> Position
+BREAKING  fn last_action              function removed
+          - last_action(owner: Address) -> Option<Action>
+BREAKING  struct Position.fee         field added
+          + i128
+          used by position
+BREAKING  error VaultError::NotFound  error code changed
+          1 -> 10
+          used by deposit, withdraw
+
+5 breaking, 0 risky, 0 compatible, 0 info
+result: breaking

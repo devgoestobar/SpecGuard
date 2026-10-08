@@ -1,0 +1,16 @@
+old  vault_v1.wasm        6be7f445..0528
+new  vault_v2_risky.wasm  51c2a2b0..75f1
+
+RISKY     fn withdraw(to)           argument renamed
+          to -> recipient
+RISKY     union Action::Claim       case added; old clients cannot decode it
+          used by last_action
+RISKY     enum Status::Closed       value added; old clients cannot decode it
+          + 2
+          used by status
+RISKY     error VaultError::Paused  error code removed
+          - 3
+          used by deposit, withdraw
+
+0 breaking, 4 risky, 0 compatible, 0 info
+result: risky

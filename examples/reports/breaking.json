@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "old": {
+    "source": "vault_v1.wasm",
+    "wasmHash": "6be7f445d4c003d31f93fcc82306a3fc9196bab8e45f918f2574941c40700528"
+  },
+  "new": {
+    "source": "vault_v2_breaking.wasm",
+    "wasmHash": "7cc398bca002ea937954002071d84896529cbf8538291c1cb5e75ced910c2adf"
+  },
+  "verdict": "breaking",
+  "summary": {
+    "breaking": 5,
+    "risky": 0,
+    "compatible": 0,
+    "info": 0
+  },
+  "changes": [
+    {
+      "severity": "breaking",
+      "rule": "fn-input-type",
+      "path": "fn deposit(amount)",
+      "message": "argument type changed",
+      "before": "i128",
+      "after": "u64"
+    },
+    {
+      "severity": "breaking",
+      "rule": "fn-output-type",
+      "path": "fn position",
+      "message": "return type changed",
+      "before": "Option<Position>",
+      "after": "Position"
+    },
+    {
+      "severity": "breaking",
+      "rule": "fn-removed",
+      "path": "fn last_action",
+      "message": "function removed",
+      "before": "last_action(owner: Address) -> Option<Action>"
+    },
+    {
+      "severity": "breaking",
+      "rule": "struct-field-added",
+      "path": "struct Position.fee",
+      "message": "field added",
+      "after": "i128",
+      "usedBy": [
+        "position"
+      ]
+    },
+    {
+      "severity": "breaking",
+      "rule": "error-code-changed",
+      "path": "error VaultError::NotFound",
+      "message": "error code changed",
+      "before": "1",
+      "after": "10",
+      "usedBy": [
+        "deposit",
+        "withdraw"
+      ]
+    }
+  ]
+}

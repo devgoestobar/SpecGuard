@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "old": {
+    "source": "vault_v1.wasm",
+    "wasmHash": "6be7f445d4c003d31f93fcc82306a3fc9196bab8e45f918f2574941c40700528"
+  },
+  "new": {
+    "source": "vault_v2_risky.wasm",
+    "wasmHash": "51c2a2b0253021147b6f9081a5f7a6b35b1e8b05c986c730a329e551a70475f1"
+  },
+  "verdict": "risky",
+  "summary": {
+    "breaking": 0,
+    "risky": 4,
+    "compatible": 0,
+    "info": 0
+  },
+  "changes": [
+    {
+      "severity": "risky",
+      "rule": "fn-input-renamed",
+      "path": "fn withdraw(to)",
+      "message": "argument renamed",
+      "before": "to",
+      "after": "recipient"
+    },
+    {
+      "severity": "risky",
+      "rule": "union-case-added",
+      "path": "union Action::Claim",
+      "message": "case added; old clients cannot decode it",
+      "usedBy": [
+        "last_action"
+      ]
+    },
+    {
+      "severity": "risky",
+      "rule": "enum-case-added",
+      "path": "enum Status::Closed",
+      "message": "value added; old clients cannot decode it",
+      "after": "2",
+      "usedBy": [
+        "status"
+      ]
+    },
+    {
+      "severity": "risky",
+      "rule": "error-removed",
+      "path": "error VaultError::Paused",
+      "message": "error code removed",
+      "before": "3",
+      "usedBy": [
+        "deposit",
+        "withdraw"
+      ]
+    }
+  ]
+}
