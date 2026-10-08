@@ -1,0 +1,34 @@
+# Builds the demo contract and compares it with the version deployed on
+# testnet, the way a contract repository would use SpecGuard.
+name: demo
+
+on:
+  pull_request:
+    paths: ["demo/**", ".github/workflows/demo.yml"]
+  push:
+    branches: [main]
+    paths: ["demo/**", ".github/workflows/demo.yml"]
+
+env:
+  # vault v1, deployed on testnet
+  CONTRACT_ID: CAWFWCMUQVA2GXHLNDWZHKIPENH6ULOL2MR7G3PDDQOHBWSBRTYXTFS6
+
+jobs:
+  interface:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: stellar/stellar-cli@v27.1.0
+
+      - name: Build contract
+        working-directory: demo
+        run: |
+          rustup target add wasm32v1-none
+          stellar contract build
+
+      - uses: ./
+        with:
+          old: ${{ env.CONTRACT_ID }}
+          new: demo/target/wasm32v1-none/release/vault.wasm
+          network: testnet
